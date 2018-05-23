@@ -29,8 +29,7 @@ const LaunchRequestHandler = {
         return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const attributesManager = handlerInput.attributesManager;
-        const requestAttributes = attributesManager.getRequestAttributes();
+        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
         const speechOutput = `${requestAttributes.t('WELCOME')} ${requestAttributes.t('HELP')}`;
 
         // we're keeping the session open with reprompt()
@@ -149,6 +148,23 @@ const CompletedEventsIntentHandler = {
         return handlerInput.responseBuilder
             .speak(speechOutput)
             .withSimpleCard(title, displayOutput)
+            .getResponse();
+    }
+};
+
+const HelpIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
+        handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
+    },
+    handle(handlerInput) {
+        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
+
+        // we're keeping the session open with reprompt()
+        return handlerInput.responseBuilder
+            .speak(requestAttributes.t('HELP'))
+            .reprompt(requestAttributes.t('HELP'))
+            .withSimpleCard(title, requestAttributes.t('HELP'))
             .getResponse();
     }
 };
