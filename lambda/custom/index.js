@@ -2,13 +2,10 @@
 
 const Alexa = require('alexa-sdk');
 const request = require('request');
+const SSML = require('./helpers/SSML');
 
 const APP_ID = process.env.APP_ID;
 const EVENTS_APP_TOKEN = process.env.EVENTS_APP_TOKEN;
-
-// Helpers
-var cleanUpSSML = require('./helpers/cleanUpSSML');
-var convertArrayToReadableString = require('./helpers/convertArrayToReadableString');
 
 // Main lambda event handler
 exports.handler = function(event, context, callback) {
@@ -49,10 +46,10 @@ var handlers = {
 
                     eventsSummary.push(`There are ${parkEvents.length} events on ${startDate}. They are:`);
                     for (var i = 0; i < parkEvents.length; i++) {
-                        eventsSummary.push(cleanUpSSML(parkEvents[i].event_description) + ' at ' + cleanUpSSML(parkEvents[i].park_facility_name));
+                        eventsSummary.push(SSML.cleanUpSSML(parkEvents[i].event_description) + ' at ' + SSML.cleanUpSSML(parkEvents[i].park_facility_name));
                     }
 
-                    this.emit(':tell', `${convertArrayToReadableString(eventsSummary, '.')}`);
+                    this.emit(':tell', `${SSML.convertArrayToReadableString(eventsSummary, '.')}`);
                 });
         } else {
             this.emit(':ask', 'Sorry, I didn\'t recognize that date. Please try again.', 'How can I help?');
