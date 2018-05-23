@@ -1,11 +1,10 @@
-module.exports = function convertArrayToReadableString (array, separator) {
+module.exports = function convertArrayToReadableString(array, separator) {
     var readableString = ``;
-    for (var i = 0; i < array.length; i++){
+    for (var i = 0; i < array.length; i++) {
         if (i === (array.length - 1)) {
-            //last item
+            // last item
             readableString += `and ${array[i]}.`;
-        }
-        else {
+        } else {
             // any item except the last
             readableString += `${array[i]}${separator} `;
         }
