@@ -1,0 +1,7 @@
+{
+  "author": "Armando C. Santisbon",
+  "dependencies": {
+    "alexa-sdk": "^1.0.15",
+    "request": "^2.83.0"
+  }
+}

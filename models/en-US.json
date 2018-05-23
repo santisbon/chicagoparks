@@ -1,0 +1,38 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "chicago parks",
+      "intents": [
+        {
+          "name": "EventCheck",
+          "slots": [
+            {
+              "name": "StartDate",
+              "type": "AMAZON.DATE"
+            }
+          ],
+          "samples": [
+            "for events starting {StartDate}",
+            "for events on {StartDate}",
+            "what events start {StartDate}",
+            "what events are going on {StartDate}",
+            "what's going on {StartDate}",
+            "what events are happening {StartDate}",
+            "what are {StartDate} events",
+            "give me {StartDate} events",
+            "give me events starting {StartDate}"
+          ]
+        },
+        {
+          "name": "AMAZON.StopIntent"
+        },
+        {
+          "name": "AMAZON.CancelIntent"
+        },
+        {
+          "name": "AMAZON.HelpIntent"
+        }
+      ]
+    }
+  }
+}
