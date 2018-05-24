@@ -1,23 +1,59 @@
+'use strict';
+
 // use 'ask-sdk' if standard SDK module is installed or 'ask-sdk-core'
 const Alexa = require('ask-sdk');
-const SSML = require('./helpers/SSML');
-const httpsHelper = require('./helpers/httpsHelper');
+const ssmlHelper = require('../helpers/ssmlHelper');
+const httpsHelper = require('../helpers/httpsHelper');
 
 /**
  * The Socrata APIs provide rich query functionality through a query language called
  * “Socrata Query Language” or “SoQL”.
  * Uncomment to specify a query and use it when building request params.
  */
-// const SoQL = ``;
+// const eventsSoQL = ``;
 
-const title = '';
-const eventsErrorMessage = '';
+const title = 'Chicago Parks';
 
-const requiredSlots = [
+const welcomeMessage = `Welcome to ${title}, You can tell me you want to see a movie. For other park events, ask what events start today or what's going on this Friday. 
+You can also ask for help.`;
+const welcomeMessageDisplay = `"I want to see a movie"
+"What events start today"
+"What's going on this Friday"`;
+
+const eventsErrorMessage = 'Sorry, there was an error reaching the Park District.';
+const genericErrorMessage = '';
+const helpMessage = `You can tell me you want to see a movie. For other park events, ask what events start today or what's going on this Friday`;
+const cancelAndStopMessage = 'Goodbye!';
+
+const eventsRequiredSlots = [
     'StartDate'
 ];
 
+const eventsApi = {
+    host: 'data.cityofchicago.org',
+    resource: '/resource/v8cj-2mjk.json'
+};
+
 const EventCheckIntent = 'EventCheck';
+
+/**
+ * The url params that the api takes.
+ * @param {*} slotValues
+ */
+function buildEventsParams(slotValues) {
+    return [
+        [
+            'reservation_start_date',
+            `${slotValues.StartDate.resolved}`
+        ],
+        [
+            'permit_status',
+            'Approved'
+        ]
+        // ['$where',
+        //    `${eventsSoQL}`]
+    ];
+}
 
 /**
  * The LaunchRequest event occurs when the skill is invoked without a specific intent.
@@ -29,14 +65,11 @@ const LaunchRequestHandler = {
         return handlerInput.requestEnvelope.request.type === 'LaunchRequest';
     },
     handle(handlerInput) {
-        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-        const speechOutput = `${requestAttributes.t('WELCOME')} ${requestAttributes.t('HELP')}`;
-
         // we're keeping the session open with reprompt()
         return handlerInput.responseBuilder
-            .speak(speechOutput)
-            .reprompt(speechOutput)
-            .withSimpleCard(title, speechOutput)
+            .speak(welcomeMessage)
+            .reprompt(helpMessage)
+            .withSimpleCard(title, welcomeMessageDisplay)
             .getResponse();
     }
 };
@@ -86,7 +119,7 @@ const InProgressEventsIntentHandler = {
                     }
                 } else if (currentSlot.resolutions.resolutionsPerAuthority[0].status.code === 'ER_SUCCESS_NO_MATCH') {
                     // the slot there but it didn't match a value
-                    if (requiredSlots.indexOf(currentSlot.name) > -1) {
+                    if (eventsRequiredSlots.indexOf(currentSlot.name) > -1) {
                         // it's in the list of required slots
                         prompt = `What ${currentSlot.name} are you looking for`;
 
@@ -115,27 +148,26 @@ const CompletedEventsIntentHandler = {
     },
     async handle(handlerInput) {
         const filledSlots = handlerInput.requestEnvelope.request.intent.slots;
-        const slotValues = SSML.getSlotValues(filledSlots);
-        const eventsOptions = httpsHelper.buildEventsOptions(slotValues);
+        const slotValues = ssmlHelper.getSlotValues(filledSlots);
+        const eventsParams = buildEventsParams(slotValues);
+        const eventsOptions = httpsHelper.buildOptions(eventsParams, eventsApi, process.env.EVENTS_APP_TOKEN);
 
         let speechOutput = '';
         let displayOutput = '';
 
         try {
-            const response = await httpsHelper.httpGet(eventsOptions);
-            // const lastResult = response[response.length - 1];
+            const parkEvents = await httpsHelper.httpGet(eventsOptions);
 
-            if (response.length > 0) {
-                // You can use:
-                // ${slotValues.StartDate.synonym}
-                // ${slotValues.StartDate.resolved}
-                // ${lastResult.some_value}
-                speechOutput =
-                ``;
-                displayOutput =
-                ``;
+            if (parkEvents.length > 0) {
+                let eventsSummary = [];
+
+                eventsSummary.push(`There are ${parkEvents.length} events on ${slotValues.StartDate.resolved}. They are:`);
+                for (var i = 0; i < parkEvents.length; i++) {
+                    eventsSummary.push(ssmlHelper.cleanUpSSML(parkEvents[i].event_description) + ' at ' + ssmlHelper.cleanUpSSML(parkEvents[i].park_facility_name));
+                }
+                speechOutput = displayOutput = `${ssmlHelper.convertArrayToReadableString(eventsSummary, '.')}`;
             } else {
-                speechOutput = displayOutput = `I am sorry. I could not find a match for ${slotValues.StartDate.synonym}`;
+                speechOutput = displayOutput = `There are no events for ${slotValues.StartDate.synonym}`;
                 console.log(eventsOptions);
             }
         } catch (error) {
@@ -143,7 +175,6 @@ const CompletedEventsIntentHandler = {
             console.log(`Intent: ${handlerInput.requestEnvelope.request.intent.name}: message: ${error.message}`);
         }
 
-        // More options: https://github.com/alexa/alexa-skills-kit-sdk-for-nodejs/wiki/response-building
         // We are closing the session here by not specifying a reprompt()
         return handlerInput.responseBuilder
             .speak(speechOutput)
@@ -158,13 +189,76 @@ const HelpIntentHandler = {
         handlerInput.requestEnvelope.request.intent.name === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-        const requestAttributes = handlerInput.attributesManager.getRequestAttributes();
-
         // we're keeping the session open with reprompt()
         return handlerInput.responseBuilder
-            .speak(requestAttributes.t('HELP'))
-            .reprompt(requestAttributes.t('HELP'))
-            .withSimpleCard(title, requestAttributes.t('HELP'))
+            .speak(helpMessage)
+            .reprompt(helpMessage)
+            .withSimpleCard(title, helpMessage)
             .getResponse();
     }
+};
+
+const CancelAndStopIntentHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
+        (handlerInput.requestEnvelope.request.intent.name === 'AMAZON.CancelIntent' ||
+        handlerInput.requestEnvelope.request.intent.name === 'AMAZON.StopIntent');
+    },
+    handle(handlerInput) {
+        return handlerInput.responseBuilder
+            .speak(cancelAndStopMessage)
+            .withSimpleCard(title, cancelAndStopMessage)
+            .getResponse();
+    }
+};
+
+/**
+ * Although you can not return a response with any speech, card or directives after receiving
+ * a SessionEndedRequest, the SessionEndedRequestHandler is a good place to put your cleanup logic.
+ */
+const SessionEndedRequestHandler = {
+    canHandle(handlerInput) {
+        return handlerInput.requestEnvelope.request.type === 'SessionEndedRequest';
+    },
+    handle(handlerInput) {
+        // any cleanup logic goes here
+        return handlerInput.responseBuilder.getResponse();
+    }
+};
+
+const ErrorHandler = {
+    canHandle(handlerInput, error) {
+        // Return true in all cases to create a catch-all handler.
+        return error.name.startsWith('AskSdk');
+    },
+    // we're keeping the session open with reprompt()
+    handle(handlerInput, error) {
+        return handlerInput.responseBuilder
+            .speak(genericErrorMessage)
+            .reprompt(genericErrorMessage)
+            .getResponse();
+    }
+};
+
+let skill;
+
+exports.handler = async function(event, context) {
+    console.log(`REQUEST++++${JSON.stringify(event)}`);
+
+    if (!skill) {
+        skill = Alexa.SkillBuilders.custom()
+            .addRequestHandlers(
+                LaunchRequestHandler,
+                InProgressEventsIntentHandler,
+                CompletedEventsIntentHandler,
+                HelpIntentHandler,
+                CancelAndStopIntentHandler,
+                SessionEndedRequestHandler
+            )
+            .addErrorHandlers(ErrorHandler)
+            .withSkillId(process.env.APP_ID)
+            .create();
+    }
+
+    return skill.invoke(event, context);
 };

@@ -1,10 +1,5 @@
 const https = require('https');
 
-const eventsApi = {
-    host: 'data.cityofchicago.org',
-    resource: '/resource/v8cj-2mjk.json'
-};
-
 function buildQueryString(params) {
     let paramList = '';
     params.forEach((paramGroup, index) => {
@@ -13,39 +8,19 @@ function buildQueryString(params) {
     return paramList;
 }
 
-function buildHttpGetOptions(host, path, port, params) {
+function buildHttpGetOptions(host, path, port, params, appToken) {
     return {
         host: host,
         path: path + buildQueryString(params),
         port,
         method: 'GET',
-        headers: {'X-App-Token': process.env.EVENTS_APP_TOKEN}
+        headers: {'X-App-Token': appToken}
     };
 }
 
-/**
- * The url params that the api takes.
- * @param {*} slotValues
- */
-function buildEventsParams(slotValues) {
-    return [
-        [
-            'reservation_start_date',
-            `${slotValues.StartDate.resolved}`
-        ],
-        [
-            'permit_status',
-            'Approved'
-        ]
-        // ['$where',
-        //    `${SoQL}`]
-    ];
-}
-
-function buildEventsOptions(slotValues) {
-    const params = buildEventsParams(slotValues);
+function buildOptions(params, apiEndpoint, appToken) {
     const port = 443;
-    return buildHttpGetOptions(eventsApi.host, eventsApi.resource, port, params);
+    return buildHttpGetOptions(apiEndpoint.host, apiEndpoint.resource, port, params, appToken);
 }
 
 function httpGet(options) {
@@ -74,8 +49,8 @@ function httpGet(options) {
     });
 }
 
-exports.buildQueryString = buildQueryString;
-exports.buildHttpGetOptions = buildHttpGetOptions;
-exports.buildEventsParams = buildEventsParams;
-exports.buildEventsOptions = buildEventsOptions;
+// exports.buildQueryString = buildQueryString;
+// exports.buildHttpGetOptions = buildHttpGetOptions;
+// exports.buildEventsParams = buildEventsParams;
+exports.buildOptions = buildOptions;
 exports.httpGet = httpGet;

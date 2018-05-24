@@ -1,5 +1,11 @@
 {
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha './**/*.spec.js'"
+  },
   "author": "Armando C. Santisbon",
+  "license": "MIT",
   "dependencies": {
     "ask-sdk": "^2.0.5"
   },
