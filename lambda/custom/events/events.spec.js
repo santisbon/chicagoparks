@@ -2,12 +2,11 @@
 
 const chai = require('chai');
 const assert = chai.assert;
-const expect = chai.expect;
 
 describe('Chicago Parks Skill tests', function() {
     this.timeout(10000); // To disable timeout: this.timeout(0);
 
-    describe('Onboarding tests', function() {
+    describe('Interaction tests', function() {
         it('Launches successfully', async function() {
             const va = require('virtual-alexa');
             const alexa = va.VirtualAlexa.Builder()
@@ -31,7 +30,7 @@ describe('Chicago Parks Skill tests', function() {
             assert.include(reply.response.outputSpeech.ssml, 'You can tell me');
         });
 
-        it('Finds events', function() {
+        it('Finds events', async function() {
             const va = require('virtual-alexa');
             const alexa = va.VirtualAlexa.Builder()
                 .handler('events/events.handler') // Lambda function file and name e.g. 'index.handler'
@@ -40,23 +39,11 @@ describe('Chicago Parks Skill tests', function() {
 
             // An intent that has delegated dialogs such as EventCheck.
             // alexa.intend() is what the user would do and it returns a promise.
-            alexa.intend('EventCheck').then((response) => {
-                assert.equal(response.skillResponse.directive('Dialog.Delegate').type, 'Dialog.Delegate');
-                assert.equal(response.prompt, 'When do you want to go to the event?');
-                return alexa.intend('EventCheck', {StartDate: '2018-05-25'});
-            }).then((dialogResponse) => {
-                // console.log(dialogResponse);
-                // assert.include(dialogResponse.response.outputSpeech.ssml, 'Example of invalid response. There are');
-                expect(dialogResponse.response.outputSpeech.ssml).to.include('There are');
-            }).catch((error) => {
-                console.log(error);
-            });
-
-            // let dialogReply = await alexa.intend('EventCheck', {temperament: 'watch'});
-            // assert.equal(dialogReply.prompt, 'Do you prefer high energy or low energy dogs?');
-            // let skillReply = await alexa.intend('EventCheck', {energy: 'high'});
-            // assert.equal(skillReply.prompt(), 'Done with dialog');
-            // assert.include(reply.response.outputSpeech.ssml, 'There are');
+            let dialogReply = await alexa.intend('EventCheck');
+            assert.equal(dialogReply.skillResponse.directive('Dialog.Delegate').type, 'Dialog.Delegate');
+            assert.equal(dialogReply.prompt, 'When do you want to go to the event?');
+            let skillReply = await alexa.intend('EventCheck', {StartDate: '2018-05-25'});
+            assert.include(skillReply.response.outputSpeech.ssml, 'There are');
         });
     });
 });
