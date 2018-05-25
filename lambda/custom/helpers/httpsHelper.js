@@ -8,9 +8,9 @@ function buildQueryString(params) {
     return paramList;
 }
 
-function buildHttpGetOptions(host, path, port, params, appToken) {
+function buildHttpGetOptions(hostname, path, port, params, appToken) {
     return {
-        host: host,
+        hostname: hostname,
         path: path + buildQueryString(params),
         port,
         method: 'GET',
@@ -20,7 +20,7 @@ function buildHttpGetOptions(host, path, port, params, appToken) {
 
 function buildOptions(params, apiEndpoint, appToken) {
     const port = 443;
-    return buildHttpGetOptions(apiEndpoint.host, apiEndpoint.resource, port, params, appToken);
+    return buildHttpGetOptions(apiEndpoint.hostname, apiEndpoint.resource, port, params, appToken);
 }
 
 function httpGet(options) {

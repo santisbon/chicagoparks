@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "mocha './**/*.spec.js'"
+    "test": "mocha './{,!(node_modules)/**/}*.spec.js' "
   },
   "author": "Armando C. Santisbon",
   "license": "MIT",

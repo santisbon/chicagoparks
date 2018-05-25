@@ -30,7 +30,7 @@ const eventsRequiredSlots = [
 ];
 
 const eventsApi = {
-    host: 'data.cityofchicago.org',
+    hostname: 'data.cityofchicago.org',
     resource: '/resource/v8cj-2mjk.json'
 };
 
