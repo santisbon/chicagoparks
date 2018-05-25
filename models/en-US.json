@@ -1,38 +1,76 @@
 {
   "interactionModel": {
-    "languageModel": {
-      "invocationName": "chicago parks",
-      "intents": [
-        {
-          "name": "EventCheck",
-          "slots": [
-            {
-              "name": "StartDate",
-              "type": "AMAZON.DATE"
-            }
+      "languageModel": {
+          "invocationName": "chicago parks",
+          "intents": [
+              {
+                  "name": "EventCheck",
+                  "slots": [
+                      {
+                          "name": "StartDate",
+                          "type": "AMAZON.DATE",
+                          "samples": [
+                              "{StartDate}"
+                          ]
+                      }
+                  ],
+                  "samples": [
+                      "for events starting {StartDate}",
+                      "for events on {StartDate}",
+                      "what events start {StartDate}",
+                      "what events are going on {StartDate}",
+                      "what's going on {StartDate}",
+                      "what events are happening {StartDate}",
+                      "what are {StartDate} events",
+                      "give me {StartDate} events",
+                      "give me events starting {StartDate}"
+                  ]
+              },
+              {
+                  "name": "AMAZON.StopIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.CancelIntent",
+                  "samples": []
+              },
+              {
+                  "name": "AMAZON.HelpIntent",
+                  "samples": []
+              }
           ],
-          "samples": [
-            "for events starting {StartDate}",
-            "for events on {StartDate}",
-            "what events start {StartDate}",
-            "what events are going on {StartDate}",
-            "what's going on {StartDate}",
-            "what events are happening {StartDate}",
-            "what are {StartDate} events",
-            "give me {StartDate} events",
-            "give me events starting {StartDate}"
+          "types": []
+      },
+      "dialog": {
+          "intents": [
+              {
+                  "name": "EventCheck",
+                  "confirmationRequired": false,
+                  "prompts": {},
+                  "slots": [
+                      {
+                          "name": "StartDate",
+                          "type": "AMAZON.DATE",
+                          "confirmationRequired": false,
+                          "elicitationRequired": true,
+                          "prompts": {
+                              "elicitation": "Elicit.Slot.975288526733.743819333155"
+                          }
+                      }
+                  ]
+              }
           ]
-        },
-        {
-          "name": "AMAZON.StopIntent"
-        },
-        {
-          "name": "AMAZON.CancelIntent"
-        },
-        {
-          "name": "AMAZON.HelpIntent"
-        }
+      },
+      "prompts": [
+          {
+              "id": "Elicit.Slot.975288526733.743819333155",
+              "variations": [
+                  {
+                      "type": "PlainText",
+                      "value": "When do you want to go to the event?"
+                  }
+              ]
+          }
       ]
-    }
   }
 }

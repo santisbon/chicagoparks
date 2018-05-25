@@ -14,8 +14,7 @@ const httpsHelper = require('../helpers/httpsHelper');
 
 const title = 'Chicago Parks';
 
-const welcomeMessage = `Welcome to ${title}, You can tell me you want to see a movie. For other park events, ask what events start today or what's going on this Friday. 
-You can also ask for help.`;
+const welcomeMessage = `Welcome to ${title}, what would you like to do? You can ask for help too.`;
 const welcomeMessageDisplay = `"I want to see a movie"
 "What events start today"
 "What's going on this Friday"`;
@@ -243,7 +242,7 @@ const ErrorHandler = {
 let skill;
 
 exports.handler = async function(event, context) {
-    console.log(`REQUEST++++${JSON.stringify(event)}`);
+    // console.log(`REQUEST++++${JSON.stringify(event)}`);
 
     if (!skill) {
         skill = Alexa.SkillBuilders.custom()
