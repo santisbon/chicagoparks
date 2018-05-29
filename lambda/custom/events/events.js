@@ -1,6 +1,5 @@
 'use strict';
 
-// use 'ask-sdk' if standard SDK module is installed or 'ask-sdk-core'
 const ssmlHelper = require('../helpers/ssmlHelper');
 const httpsHelper = require('../helpers/httpsHelper');
 
@@ -13,13 +12,13 @@ const httpsHelper = require('../helpers/httpsHelper');
 
 const title = 'Chicago Parks';
 
-const eventsErrorMessage = 'Sorry, there was an error reaching the Park District.';
+const errorMessage = 'Sorry, there was an error reaching the Park District.';
 
-const eventsRequiredSlots = [
+const requiredSlots = [
     'StartDate'
 ];
 
-const eventsApi = {
+const api = {
     hostname: 'data.cityofchicago.org',
     resource: '/resource/v8cj-2mjk.json'
 };
@@ -30,7 +29,7 @@ const EventCheckIntent = 'EventCheck';
  * The url params that the api takes.
  * @param {*} slotValues
  */
-function buildEventsParams(slotValues) {
+function buildParams(slotValues) {
     return [
         [
             'reservation_start_date',
@@ -90,7 +89,7 @@ const InProgressEventsIntentHandler = {
                     }
                 } else if (currentSlot.resolutions.resolutionsPerAuthority[0].status.code === 'ER_SUCCESS_NO_MATCH') {
                     // the slot there but it didn't match a value
-                    if (eventsRequiredSlots.indexOf(currentSlot.name) > -1) {
+                    if (requiredSlots.indexOf(currentSlot.name) > -1) {
                         // it's in the list of required slots
                         prompt = `What ${currentSlot.name} are you looking for`;
 
@@ -120,29 +119,29 @@ const CompletedEventsIntentHandler = {
     async handle(handlerInput) {
         const filledSlots = handlerInput.requestEnvelope.request.intent.slots;
         const slotValues = ssmlHelper.getSlotValues(filledSlots);
-        const eventsParams = buildEventsParams(slotValues);
-        const eventsOptions = httpsHelper.buildOptions(eventsParams, eventsApi, process.env.EVENTS_APP_TOKEN);
+        const params = buildParams(slotValues);
+        const options = httpsHelper.buildOptions(params, api, process.env.PARKS_APP_TOKEN);
 
         let speechOutput = '';
         let displayOutput = '';
 
         try {
-            const parkEvents = await httpsHelper.httpGet(eventsOptions);
+            const parkEvents = await httpsHelper.httpGet(options);
 
             if (parkEvents.length > 0) {
-                let eventsSummary = [];
+                let summary = [];
 
-                eventsSummary.push(`There are ${parkEvents.length} events on ${slotValues.StartDate.resolved}. They are:`);
+                summary.push(`There are ${parkEvents.length} events on ${slotValues.StartDate.resolved}. They are:`);
                 for (var i = 0; i < parkEvents.length; i++) {
-                    eventsSummary.push(ssmlHelper.cleanUpSSML(parkEvents[i].event_description) + ' at ' + ssmlHelper.cleanUpSSML(parkEvents[i].park_facility_name));
+                    summary.push(ssmlHelper.cleanUpSSML(parkEvents[i].event_description) + ' at ' + ssmlHelper.cleanUpSSML(parkEvents[i].park_facility_name));
                 }
-                speechOutput = displayOutput = `${ssmlHelper.convertArrayToReadableString(eventsSummary, '.')}`;
+                speechOutput = displayOutput = `${ssmlHelper.convertArrayToReadableString(summary, '.')}`;
             } else {
                 speechOutput = displayOutput = `There are no events for ${slotValues.StartDate.synonym}`;
-                console.log(eventsOptions);
+                console.log(options);
             }
         } catch (error) {
-            speechOutput = displayOutput = eventsErrorMessage;
+            speechOutput = displayOutput = errorMessage;
             console.log(`Intent: ${handlerInput.requestEnvelope.request.intent.name}: message: ${error.message}`);
         }
 

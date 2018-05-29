@@ -1,3 +1,4 @@
+// use 'ask-sdk' if standard SDK module is installed or 'ask-sdk-core'
 const Alexa = require('ask-sdk');
 
 const eventsHandlers = require('./events/events');

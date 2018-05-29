@@ -3,7 +3,7 @@
   "main": "index.js",
   "scripts": {
     "pretest": "",
-    "test": "EVENTS_APP_TOKEN='' mocha './{,!(node_modules)/**/}*.spec.js' "
+    "test": "PARKS_APP_TOKEN='' mocha './{,!(node_modules)/**/}*.spec.js' "
   },
   "author": "Armando C. Santisbon",
   "license": "MIT",
