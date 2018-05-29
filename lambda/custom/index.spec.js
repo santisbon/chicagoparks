@@ -45,5 +45,17 @@ describe('Chicago Parks Skill tests', function() {
             let skillReply = await alexa.intend('EventCheck', {StartDate: '2018-05-25'});
             assert.include(skillReply.response.outputSpeech.ssml, 'There are');
         });
+
+        it('Finds movies', async function() {
+            const va = require('virtual-alexa');
+            const alexa = va.VirtualAlexa.Builder()
+                .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
+                .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
+                .create();
+
+            let reply = await alexa.launch();
+            reply = await alexa.utter('I want to see a movie on june first');
+            assert.include(reply.response.outputSpeech.ssml, 'There are');
+        });
     });
 });
