@@ -56,19 +56,22 @@ const FindMoviesIntentHandler = {
             const movies = await httpsHelper.httpGet(options);
 
             if (movies.length === 1) {
-                speechOutput = `${movies[0].title} is showing at ${movies[0].park} on ${moment(movies[0].date).format('MMM Do YY')}`;
-                displayOutput = `${movies[0].title}\n${movies[0].park}\n${movies[0].date}`;
+                speechOutput = `${movies[0].title}, rated ${movies[0].rating}, is showing on ${moment(movies[0].date).format('dddd MMM Do')} at ${movies[0].park}, located at ${movies[0].park_address}.`;
+                displayOutput = `${moment(movies[0].date).format('dddd MMM Do')}
+                ${movies[0].title} - ${movies[0].rating}
+                ${movies[0].park}
+                ${movies[0].park_address}`;
             } else {
                 if (movies.length > 0) {
                     let summary = [];
 
-                    summary.push(`There are ${movies.length} movies showing on ${slotValues.Date.resolved}. They are:`);
+                    summary.push(`There are ${movies.length} movies showing on ${moment(slotValues.Date.resolved).format('dddd MMM Do')}. They are:`);
                     for (var i = 0; i < movies.length; i++) {
-                        summary.push(ssmlHelper.cleanUpSSML(movies[i].title) + ' at ' + ssmlHelper.cleanUpSSML(movies[i].park));
+                        summary.push(ssmlHelper.cleanUpSSML(`${movies[i].title}, rated ${movies[i].rating}, at ${movies[i].park}, located at ${movies[i].park_address}`));
                     }
                     speechOutput = displayOutput = `${ssmlHelper.convertArrayToReadableString(summary, '.')}`;
                 } else {
-                    speechOutput = displayOutput = `There are no movies showing for ${slotValues.Date.synonym}`;
+                    speechOutput = displayOutput = `There are no movies showing for ${moment(slotValues.Date.resolved).format('dddd MMM Do')}`;
                 }
             }
         } catch (error) {
