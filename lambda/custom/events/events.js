@@ -12,7 +12,7 @@ const httpsHelper = require('../helpers/httpsHelper');
 
 const title = 'Chicago Parks';
 
-const errorMessage = 'Sorry, there was an error reaching the Park District.';
+const errorMessage = 'Sorry, there was an error reaching the Park District event listings.';
 
 const requiredSlots = [
     'StartDate'
@@ -138,7 +138,6 @@ const CompletedEventsIntentHandler = {
                 speechOutput = displayOutput = `${ssmlHelper.convertArrayToReadableString(summary, '.')}`;
             } else {
                 speechOutput = displayOutput = `There are no events for ${slotValues.StartDate.synonym}`;
-                console.log(options);
             }
         } catch (error) {
             speechOutput = displayOutput = errorMessage;

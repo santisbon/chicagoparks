@@ -1,9 +1,10 @@
 'use strict';
 const ssmlHelper = require('../helpers/ssmlHelper');
 const httpsHelper = require('../helpers/httpsHelper');
+const moment = require('moment-timezone');
 
 const title = 'Chicago Parks';
-const errorMessage = 'Sorry, there was an error reaching the Park District.';
+const errorMessage = 'Sorry, there was an error reaching the Park District movie listings.';
 
 const api = {
     hostname: 'data.cityofchicago.org',
@@ -36,10 +37,13 @@ const FindMoviesIntentHandler = {
         const filledSlots = handlerInput.requestEnvelope.request.intent.slots;
         const slotValues = ssmlHelper.getSlotValues(filledSlots);
 
+        const today = moment().tz('America/Chicago').format('YYYY-MM-DD');
+
         // if there's no date assume they want movies for today.
         if (slotValues['Date'].resolved === undefined) {
-            slotValues['Date'].synonym = slotValues['Date'].resolved = new Date();
+            slotValues['Date'].synonym = slotValues['Date'].resolved = today;
         }
+        console.log(slotValues);
         const params = buildParams(slotValues);
 
         const options = httpsHelper.buildOptions(params, api, process.env.PARKS_APP_TOKEN);
@@ -60,10 +64,10 @@ const FindMoviesIntentHandler = {
                 speechOutput = displayOutput = `${ssmlHelper.convertArrayToReadableString(summary, '.')}`;
             } else {
                 speechOutput = displayOutput = `There are no movies for ${slotValues.Date.synonym}`;
-                console.log(options);
             }
         } catch (error) {
-            speechOutput = displayOutput = errorMessage;
+            speechOutput = errorMessage;
+            displayOutput = error.message;
             console.log(`Intent: ${handlerInput.requestEnvelope.request.intent.name}: message: ${error.message}`);
         }
 

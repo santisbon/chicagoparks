@@ -47,11 +47,22 @@
                         }
                     ],
                     "samples": [
-                        "I want to see a movie {Date}",
-                        "what movies are playing {Date}",
-                        "give me a movie",
                         "for movies",
-                        "I want to watch a movie {Date}"
+                        "give me a movie",
+                        "there are any movies showing playing on {Date}",
+                        "there are any movies showing playing {Date}",
+                        "there are any movies showing on {Date}",
+                        "there are any movies showing {Date}",
+                        "there are any movies playing on {Date}",
+                        "there are any movies playing {Date}",
+                        "there are any movies on {Date}",
+                        "there are any movies {Date}",
+                        "I want to see a movie on {Date}",
+                        "I want to see a movie {Date}",
+                        "I want to watch a movie on {Date}",
+                        "I want to watch a movie {Date}",
+                        "What movies are playing on {Date}",
+                        "What movies are playing {Date}"
                     ]
                 }
             ],

@@ -2,6 +2,7 @@
 const Alexa = require('ask-sdk');
 
 const eventsHandlers = require('./events/events');
+const moviesHandlers = require('./movies/movies');
 const builtinHandlers = require('./builtinIntents/handlers');
 
 let skill;
@@ -15,6 +16,7 @@ exports.handler = async function(event, context) {
                 builtinHandlers.LaunchRequestHandler,
                 eventsHandlers.InProgressEventsIntentHandler,
                 eventsHandlers.CompletedEventsIntentHandler,
+                moviesHandlers.FindMoviesIntentHandler,
                 builtinHandlers.HelpIntentHandler,
                 builtinHandlers.CancelAndStopIntentHandler,
                 builtinHandlers.SessionEndedRequestHandler

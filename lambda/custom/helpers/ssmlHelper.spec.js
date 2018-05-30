@@ -6,8 +6,7 @@ const expect = chai.expect;
 const ssmlHelper = require('./ssmlHelper');
 
 // What the Alexa service sends to the lambda function in its request
-const completedRequestWithoutSynonym =
-{
+const completedRequestWithoutSynonym = {
     'request': {
         'type': 'IntentRequest',
         'locale': 'en-US',
@@ -24,8 +23,7 @@ const completedRequestWithoutSynonym =
     }
 };
 
-const completedRequestWithSynonym =
-{
+const completedRequestWithSynonym = {
     'request': {
         'type': 'IntentRequest',
         'locale': 'en-US',
@@ -61,8 +59,7 @@ const completedRequestWithSynonym =
     }
 };
 
-const incompleteRequest =
-{
+const incompleteEventsRequest = {
     'request': {
         'type': 'IntentRequest',
         'locale': 'en-US',
@@ -78,12 +75,25 @@ const incompleteRequest =
     }
 };
 
+const incompleteMoviesRequest = {
+    'request': {
+        'type': 'IntentRequest',
+        'locale': 'en-US',
+        'intent': {
+            'name': 'FindMoviesIntent',
+            'slots': {
+                'Date': {
+                    'name': 'Date'
+                }
+            }
+        },
+        'dialogState': 'STARTED'
+    }
+};
+
 describe('Get slot values from a complete request without synonyms', function() {
     it('Should get the slot values', function() {
         var slots = ssmlHelper.getSlotValues(completedRequestWithoutSynonym.request.intent.slots);
-
-        // console.log('Slot values:');
-        // console.log(slots);
 
         expect(slots).to.have.property('StartDate');
         expect(slots.StartDate.synonym).to.be.equal('2018-05-25');
@@ -96,9 +106,6 @@ describe('Get slot values from a complete request with synonyms', function() {
     it('Should get the slot values', function() {
         let slots = ssmlHelper.getSlotValues(completedRequestWithSynonym.request.intent.slots);
 
-        // console.log('Slot values:');
-        // console.log(slots);
-
         expect(slots).to.have.property('station');
         expect(slots.station.synonym).to.be.equal('north');
         expect(slots.station.resolved).to.be.equal('Foster');
@@ -106,16 +113,22 @@ describe('Get slot values from a complete request with synonyms', function() {
     });
 });
 
-describe('Get slot values from incomplete request', function() {
-    it('Should not get the slot values', function() {
-        var slots = ssmlHelper.getSlotValues(incompleteRequest.request.intent.slots);
-
-        // console.log('Slot values:');
-        // console.log(slots);
+describe('Get slot values from incomplete requests', function() {
+    it('Should not get the events slot values', function() {
+        var slots = ssmlHelper.getSlotValues(incompleteEventsRequest.request.intent.slots);
 
         expect(slots).to.have.property('StartDate');
         expect(slots.StartDate.synonym).to.be.equal(undefined);
         expect(slots.StartDate.resolved).to.be.equal(undefined);
         expect(slots.StartDate.isValidated).to.be.equal(false);
+    });
+
+    it('Should not get the movies slot values', function() {
+        var slots = ssmlHelper.getSlotValues(incompleteMoviesRequest.request.intent.slots);
+
+        expect(slots).to.have.property('Date');
+        expect(slots.Date.synonym).to.be.equal(undefined);
+        expect(slots.Date.resolved).to.be.equal(undefined);
+        expect(slots.Date.isValidated).to.be.equal(false);
     });
 });

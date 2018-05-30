@@ -3,7 +3,7 @@
     "publishingInformation": {
       "locales": {
         "en-US": {
-          "summary": "Get events happening on Chicago Parks for any given date",
+          "summary": "Get events and movies happening at Chicago Parks for any given date",
           "examplePhrases": [
             "Alexa, ask Chicago Parks for events starting today",
             "What events start this Friday",
@@ -21,7 +21,7 @@
           ],
           "name": "Chicago Parks",
           "smallIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/578f/77fee298a5dc4eb4a56e1fa99a00d946/APP_ICON?versionId=kQ2Dk2P_z5lQYZ3IoLByJRQb7B7ypGEv&AWSAccessKeyId=AKIAI3X6PUXD7CU5F5BQ&Expires=1527179185&Signature=xYyQPDm3Kj4zm4UYvO9h%2FBD7ykQ%3D",
-          "description": "Get events happening on Chicago Park District facilities on any given date. Data provided by the City of Chicago Data Portal.",
+          "description": "Get events and movies happening at Chicago Park District facilities on any given date. Data provided by the City of Chicago Data Portal.",
           "largeIconUri": "https://s3.amazonaws.com/CAPS-SSE/echo_developer/7aff/acdcc4668abb4b14b9acc1bb4f6ae85c/APP_ICON_LARGE?versionId=YBlA7u6aK0WXLzv3Jx1XA3WgPs.DtY8r&AWSAccessKeyId=AKIAI3X6PUXD7CU5F5BQ&Expires=1527179185&Signature=HjQhacmzlRWSf21nH39PbCxTAwo%3D"
         }
       },
