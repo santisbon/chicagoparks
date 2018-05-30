@@ -37,12 +37,12 @@ describe('Chicago Parks Skill tests', function() {
                 .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
                 .create();
 
-            // An intent that has delegated dialogs such as EventCheck.
+            // An intent that has delegated dialogs such as FindEventsIntent.
             // alexa.intend() is what the user would do and it returns a promise.
-            let dialogReply = await alexa.intend('EventCheck');
+            let dialogReply = await alexa.intend('FindEventsIntent');
             assert.equal(dialogReply.skillResponse.directive('Dialog.Delegate').type, 'Dialog.Delegate');
             assert.equal(dialogReply.prompt, 'When do you want to go to the event?');
-            let skillReply = await alexa.intend('EventCheck', {StartDate: '2018-05-25'});
+            let skillReply = await alexa.intend('FindEventsIntent', {StartDate: '2018-05-25'});
             assert.include(skillReply.response.outputSpeech.ssml, 'There are');
         });
 

@@ -23,7 +23,7 @@ const api = {
     resource: '/resource/v8cj-2mjk.json'
 };
 
-const EventCheckIntent = 'EventCheck';
+const FindEventsIntent = 'FindEventsIntent';
 
 /**
  * The url params that the api takes.
@@ -53,7 +53,7 @@ function buildParams(slotValues) {
 const InProgressEventsIntentHandler = {
     canHandle(handlerInput) {
         return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
-        handlerInput.requestEnvelope.request.intent.name === EventCheckIntent &&
+        handlerInput.requestEnvelope.request.intent.name === FindEventsIntent &&
         handlerInput.requestEnvelope.request.dialogState !== 'COMPLETED';
     },
     handle(handlerInput) {
@@ -113,7 +113,7 @@ const InProgressEventsIntentHandler = {
 const CompletedEventsIntentHandler = {
     canHandle(handlerInput) {
         return handlerInput.requestEnvelope.request.type === 'IntentRequest' &&
-        handlerInput.requestEnvelope.request.intent.name === EventCheckIntent &&
+        handlerInput.requestEnvelope.request.intent.name === FindEventsIntent &&
         handlerInput.requestEnvelope.request.dialogState === 'COMPLETED';
     },
     async handle(handlerInput) {

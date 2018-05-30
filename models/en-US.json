@@ -4,7 +4,7 @@
             "invocationName": "chicago parks",
             "intents": [
                 {
-                    "name": "EventCheck",
+                    "name": "FindEventsIntent",
                     "slots": [
                         {
                             "name": "StartDate",
@@ -60,7 +60,7 @@
         "dialog": {
             "intents": [
                 {
-                    "name": "EventCheck",
+                    "name": "FindEventsIntent",
                     "confirmationRequired": false,
                     "prompts": {},
                     "slots": [

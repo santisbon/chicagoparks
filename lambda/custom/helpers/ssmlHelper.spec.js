@@ -12,7 +12,7 @@ const completedRequestWithoutSynonym =
         'type': 'IntentRequest',
         'locale': 'en-US',
         'intent': {
-            'name': 'EventCheck',
+            'name': 'FindEventsIntent',
             'slots': {
                 'StartDate': {
                     'name': 'StartDate',
@@ -67,7 +67,7 @@ const incompleteRequest =
         'type': 'IntentRequest',
         'locale': 'en-US',
         'intent': {
-            'name': 'EventCheck',
+            'name': 'FindEventsIntent',
             'slots': {
                 'StartDate': {
                     'name': 'StartDate'
