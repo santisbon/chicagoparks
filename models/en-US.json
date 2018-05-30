@@ -49,8 +49,6 @@
                     "samples": [
                         "for movies",
                         "give me a movie",
-                        "there are any movies showing playing on {Date}",
-                        "there are any movies showing playing {Date}",
                         "there are any movies showing on {Date}",
                         "there are any movies showing {Date}",
                         "there are any movies playing on {Date}",
@@ -62,7 +60,13 @@
                         "I want to watch a movie on {Date}",
                         "I want to watch a movie {Date}",
                         "What movies are playing on {Date}",
-                        "What movies are playing {Date}"
+                        "What movies are playing {Date}",
+                        "What movies are showing on {Date}",
+                        "What movies are showing {Date}",
+                        "Movies in the park {Date}",
+                        "Movies in the park on {Date}",
+                        "Movies in the parks {Date}",
+                        "Movies in the parks on {Date}"
                     ]
                 }
             ],
