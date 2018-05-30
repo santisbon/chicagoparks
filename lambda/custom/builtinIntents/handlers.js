@@ -1,13 +1,14 @@
 
 const title = 'Chicago Parks';
 
-const welcomeMessage = `Welcome to ${title}, what would you like to do? You can ask for help too.`;
+const welcomeMessage = `Welcome to ${title}, you can ask me what movies are playing this Friday or any other date. You can also ask for help.`;
 const welcomeMessageDisplay = `"I want to see a movie"
-"What events start today"
-"What's going on this Friday"`;
-const helpMessage = `You can tell me you want to see a movie. For other park events, ask what events start today or what's going on this Friday`;
+"What movies are playing tomorrow?"
+"Are there any movies showing on June 13th?"`;
+const helpMessage = `You can tell me you want to see a movie or ask what movies are playing tomorrow.
+For other park events, ask what events start today or what's going on this Friday`;
 const cancelAndStopMessage = 'Goodbye!';
-const genericErrorMessage = '';
+const genericErrorMessage = "Sorry, I didn't get that. You can ask me for movie info or ask for help.";
 
 /**
  * The LaunchRequest event occurs when the skill is invoked without a specific intent.
