@@ -15,6 +15,8 @@
                         }
                     ],
                     "samples": [
+                        "I want to go to an event",
+                        "give me an event",
                         "for events starting {StartDate}",
                         "for events on {StartDate}",
                         "what events start {StartDate}",
@@ -48,6 +50,8 @@
                     ],
                     "samples": [
                         "for movies",
+                        "for movie info",
+                        "for movie data",
                         "give me a movie",
                         "there are any movies showing on {Date}",
                         "there are any movies showing {Date}",

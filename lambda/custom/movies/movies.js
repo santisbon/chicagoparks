@@ -60,14 +60,17 @@ const FindMoviesIntentHandler = {
                 displayOutput = `${moment(movies[0].date).format('dddd MMM Do')}\n${movies[0].title} - ${movies[0].rating}\n${movies[0].park}\n${movies[0].park_address}`;
             } else {
                 if (movies.length > 0) {
-                    let summary = [];
+                    let speechSummary = [];
+                    let displaySummary = [];
 
-                    summary.push(`There are ${movies.length} movies showing on ${moment(slotValues.Date.resolved).format('dddd MMM Do')}. They are:`);
+                    speechSummary.push(`There are ${movies.length} movies showing on ${moment(slotValues.Date.resolved).format('dddd MMM Do')}. They are:`);
+                    displaySummary.push(`${moment(slotValues.Date.resolved).format('dddd MMM Do')}`);
                     for (var i = 0; i < movies.length; i++) {
-                        summary.push(ssmlHelper.cleanUpSSML(`${movies[i].title}, rated ${movies[i].rating}, at ${movies[i].park}, located at ${movies[i].park_address}`));
+                        speechSummary.push(ssmlHelper.cleanUpSSML(`${movies[i].title}, rated ${movies[i].rating}, at ${movies[i].park}, located at ${movies[i].park_address}`));
+                        displaySummary.push(ssmlHelper.cleanUpSSML(`\n${movies[i].title} - ${movies[i].rating}\n${movies[i].park}\n${movies[i].park_address}`));
                     }
-                    speechOutput = `${ssmlHelper.convertArrayToReadableString(summary, '.')}. All movies begin at dusk.`;
-                    displayOutput = `${ssmlHelper.convertArrayToDisplayableString(summary, '.')}`;
+                    speechOutput = `${ssmlHelper.convertArrayToReadableString(speechSummary, '.')}. All movies begin at dusk.`;
+                    displayOutput = `${ssmlHelper.convertArrayToDisplayableString(displaySummary, '.')}`;
                 } else {
                     speechOutput = displayOutput = `There are no movies showing for ${moment(slotValues.Date.resolved).format('dddd MMM Do')}`;
                 }
