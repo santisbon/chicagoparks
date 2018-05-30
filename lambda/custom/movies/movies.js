@@ -56,11 +56,8 @@ const FindMoviesIntentHandler = {
             const movies = await httpsHelper.httpGet(options);
 
             if (movies.length === 1) {
-                speechOutput = `${movies[0].title}, rated ${movies[0].rating}, is showing on ${moment(movies[0].date).format('dddd MMM Do')} at ${movies[0].park}, located at ${movies[0].park_address}.`;
-                displayOutput = `${moment(movies[0].date).format('dddd MMM Do')}
-                ${movies[0].title} - ${movies[0].rating}
-                ${movies[0].park}
-                ${movies[0].park_address}`;
+                speechOutput = `${movies[0].title}, rated ${movies[0].rating}, is showing on ${moment(movies[0].date).format('dddd MMM Do')} at ${movies[0].park}, located at ${movies[0].park_address}. It begins at dusk.`;
+                displayOutput = `${moment(movies[0].date).format('dddd MMM Do')}\n${movies[0].title} - ${movies[0].rating}\n${movies[0].park}\n${movies[0].park_address}`;
             } else {
                 if (movies.length > 0) {
                     let summary = [];
@@ -69,7 +66,8 @@ const FindMoviesIntentHandler = {
                     for (var i = 0; i < movies.length; i++) {
                         summary.push(ssmlHelper.cleanUpSSML(`${movies[i].title}, rated ${movies[i].rating}, at ${movies[i].park}, located at ${movies[i].park_address}`));
                     }
-                    speechOutput = displayOutput = `${ssmlHelper.convertArrayToReadableString(summary, '.')}`;
+                    speechOutput = `${ssmlHelper.convertArrayToReadableString(summary, '.')}. All movies begin at dusk.`;
+                    displayOutput = `${ssmlHelper.convertArrayToDisplayableString(summary, '.')}`;
                 } else {
                     speechOutput = displayOutput = `There are no movies showing for ${moment(slotValues.Date.resolved).format('dddd MMM Do')}`;
                 }

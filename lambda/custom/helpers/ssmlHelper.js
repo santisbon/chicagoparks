@@ -23,6 +23,14 @@ function convertArrayToReadableString(array, separator) {
     return readableString;
 }
 
+function convertArrayToDisplayableString(array, separator) {
+    var readableString = ``;
+    for (var i = 0; i < array.length; i++) {
+        readableString += `\n${array[i]}${separator} `;
+    }
+    return readableString;
+}
+
 function getSlotValues(filledSlots) {
     const slotValues = {};
 
@@ -67,4 +75,5 @@ function getSlotValues(filledSlots) {
 
 exports.cleanUpSSML = cleanUpSSML;
 exports.convertArrayToReadableString = convertArrayToReadableString;
+exports.convertArrayToDisplayableString = convertArrayToDisplayableString;
 exports.getSlotValues = getSlotValues;
