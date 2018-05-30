@@ -59,7 +59,7 @@ const completedRequestWithSynonym = {
     }
 };
 
-const incompleteEventsRequest = {
+const incompleteRequest = {
     'request': {
         'type': 'IntentRequest',
         'locale': 'en-US',
@@ -68,22 +68,6 @@ const incompleteEventsRequest = {
             'slots': {
                 'StartDate': {
                     'name': 'StartDate'
-                }
-            }
-        },
-        'dialogState': 'STARTED'
-    }
-};
-
-const incompleteMoviesRequest = {
-    'request': {
-        'type': 'IntentRequest',
-        'locale': 'en-US',
-        'intent': {
-            'name': 'FindMoviesIntent',
-            'slots': {
-                'Date': {
-                    'name': 'Date'
                 }
             }
         },
@@ -115,20 +99,11 @@ describe('Get slot values from a complete request with synonyms', function() {
 
 describe('Get slot values from incomplete requests', function() {
     it('Should not get the events slot values', function() {
-        var slots = ssmlHelper.getSlotValues(incompleteEventsRequest.request.intent.slots);
+        var slots = ssmlHelper.getSlotValues(incompleteRequest.request.intent.slots);
 
         expect(slots).to.have.property('StartDate');
         expect(slots.StartDate.synonym).to.be.equal(undefined);
         expect(slots.StartDate.resolved).to.be.equal(undefined);
         expect(slots.StartDate.isValidated).to.be.equal(false);
-    });
-
-    it('Should not get the movies slot values', function() {
-        var slots = ssmlHelper.getSlotValues(incompleteMoviesRequest.request.intent.slots);
-
-        expect(slots).to.have.property('Date');
-        expect(slots.Date.synonym).to.be.equal(undefined);
-        expect(slots.Date.resolved).to.be.equal(undefined);
-        expect(slots.Date.isValidated).to.be.equal(false);
     });
 });

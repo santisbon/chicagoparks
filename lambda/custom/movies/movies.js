@@ -42,10 +42,11 @@ const FindMoviesIntentHandler = {
         // if there's no date assume they want movies for today.
         if (slotValues['Date'].resolved === undefined) {
             slotValues['Date'].synonym = slotValues['Date'].resolved = today;
+        } else {
+            slotValues['Date'].resolved = moment(slotValues['Date'].synonym).format('YYYY-MM-DD');
         }
-        console.log(slotValues);
-        const params = buildParams(slotValues);
 
+        const params = buildParams(slotValues);
         const options = httpsHelper.buildOptions(params, api, process.env.PARKS_APP_TOKEN);
 
         let speechOutput = '';
@@ -54,16 +55,21 @@ const FindMoviesIntentHandler = {
         try {
             const movies = await httpsHelper.httpGet(options);
 
-            if (movies.length > 0) {
-                let summary = [];
-
-                summary.push(`There are ${movies.length} movies on ${slotValues.Date.resolved}. They are:`);
-                for (var i = 0; i < movies.length; i++) {
-                    summary.push(ssmlHelper.cleanUpSSML(movies[i].title) + ' at ' + ssmlHelper.cleanUpSSML(movies[i].park));
-                }
-                speechOutput = displayOutput = `${ssmlHelper.convertArrayToReadableString(summary, '.')}`;
+            if (movies.length === 1) {
+                speechOutput = `${movies[0].title} is showing at ${movies[0].park} on ${movies[0].date}`;
+                displayOutput = `${movies[0].title}\n${movies[0].park}\n${movies[0].date}`;
             } else {
-                speechOutput = displayOutput = `There are no movies for ${slotValues.Date.synonym}`;
+                if (movies.length > 0) {
+                    let summary = [];
+
+                    summary.push(`There are ${movies.length} movies showing on ${slotValues.Date.resolved}. They are:`);
+                    for (var i = 0; i < movies.length; i++) {
+                        summary.push(ssmlHelper.cleanUpSSML(movies[i].title) + ' at ' + ssmlHelper.cleanUpSSML(movies[i].park));
+                    }
+                    speechOutput = displayOutput = `${ssmlHelper.convertArrayToReadableString(summary, '.')}`;
+                } else {
+                    speechOutput = displayOutput = `There are no movies showing for ${slotValues.Date.synonym}`;
+                }
             }
         } catch (error) {
             speechOutput = errorMessage;
