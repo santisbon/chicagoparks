@@ -56,10 +56,40 @@ describe('Chicago Parks Skill tests', function() {
             let reply = await alexa.launch();
             reply = await alexa.utter('for movies');
 
+            assert.include(reply.response.outputSpeech.ssml, 'showing');
+        });
+
+        it('Finds movies for a date with 1 movie', async function() {
+            const va = require('virtual-alexa');
+            const alexa = va.VirtualAlexa.Builder()
+                .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
+                .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
+                .create();
+            const moment = require('moment-timezone');
+            const date = moment('2018-06-01').tz('America/Chicago').format('YYYY-MM-DD');
+
+            let reply = await alexa.launch();
+            reply = await alexa.utter(`I want to see a movie on ${date}`);
+            // console.log(reply.response);
+            assert.include(reply.response.outputSpeech.ssml, 'is showing');
+        });
+
+        it('Finds movies for a date with many movies', async function() {
+            const va = require('virtual-alexa');
+            const alexa = va.VirtualAlexa.Builder()
+                .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
+                .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
+                .create();
+            const moment = require('moment-timezone');
+            const date = moment('2018-06-15').tz('America/Chicago').format('YYYY-MM-DD');
+
+            let reply = await alexa.launch();
+            reply = await alexa.utter(`I want to see a movie on ${date}`);
+            // console.log(reply.response);
             assert.include(reply.response.outputSpeech.ssml, 'There are');
         });
 
-        it('Finds movies for a date', async function() {
+        it('Finds movies for a date with no movies', async function() {
             const va = require('virtual-alexa');
             const alexa = va.VirtualAlexa.Builder()
                 .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
@@ -71,7 +101,7 @@ describe('Chicago Parks Skill tests', function() {
             let reply = await alexa.launch();
             reply = await alexa.utter(`I want to see a movie on ${date}`);
             // console.log(reply.response);
-            assert.include(reply.response.outputSpeech.ssml, 'showing');
+            assert.include(reply.response.outputSpeech.ssml, 'There are no movies showing');
         });
     });
 });

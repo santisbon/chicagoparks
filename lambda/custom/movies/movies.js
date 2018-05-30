@@ -56,7 +56,7 @@ const FindMoviesIntentHandler = {
             const movies = await httpsHelper.httpGet(options);
 
             if (movies.length === 1) {
-                speechOutput = `${movies[0].title} is showing at ${movies[0].park} on ${movies[0].date}`;
+                speechOutput = `${movies[0].title} is showing at ${movies[0].park} on ${moment(movies[0].date).format('MMM Do YY')}`;
                 displayOutput = `${movies[0].title}\n${movies[0].park}\n${movies[0].date}`;
             } else {
                 if (movies.length > 0) {
