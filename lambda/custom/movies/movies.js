@@ -17,15 +17,18 @@ const FindMoviesIntent = 'FindMoviesIntent';
  * The url params that the api takes.
  * @param {*} slotValues
  */
-function buildParams(slotValues) {
-    return [
-        [
-            'Date',
-            `${slotValues.Date.resolved}`
-        ]
-        // ['$where',
-        //    `${eventsSoQL}`]
-    ];
+function buildParams(slotValues, SoQL) {
+    var params = [];
+
+    if (slotValues.Date) {
+        params.push(['Date', `${slotValues.Date.resolved}`]);
+    }
+
+    if (SoQL) {
+        params.push(['$where', `${SoQL}`]);
+    }
+
+    return params;
 }
 
 const FindMoviesIntentHandler = {
@@ -38,15 +41,40 @@ const FindMoviesIntentHandler = {
         const slotValues = ssmlHelper.getSlotValues(filledSlots);
 
         const today = moment().tz('America/Chicago').format('YYYY-MM-DD');
+        let SoQL;
 
-        // if there's no date assume they want movies for today.
         if (slotValues['Date'].resolved === undefined) {
+            // there's no date so assume they want movies for today
             slotValues['Date'].synonym = slotValues['Date'].resolved = today;
+        } else if (slotValues['Date'].resolved.includes('W')) {
+            // they want a weekend or week
+            let parts = slotValues['Date'].resolved.split('W'); // e.g. "2018W22WE", "2018W4WE", or "2018W22"
+            delete slotValues['Date']; // eliminate from query string params, we'll use it in our SoQL query
+
+            let weekNumber = parseInt(parts[1]);
+            let monday = moment().tz('America/Chicago').week(weekNumber).day('Monday').format('YYYY-MM-DD');
+            let friday = moment().tz('America/Chicago').week(weekNumber).day('Friday').format('YYYY-MM-DD');
+            let sunday = moment().tz('America/Chicago').week(weekNumber + 1).day('Sunday').format('YYYY-MM-DD');
+
+            if (parts.length > 2 && parts[2] === 'WE') {
+                // they want the weekend
+                SoQL = `date between '${friday}' and '${sunday}'`;
+            } else {
+                // they want the entire week
+                if (monday < today) {
+                    // this week
+                    SoQL = `date between '${today}' and '${sunday}'`;
+                } else {
+                    // some other week
+                    SoQL = `date between '${monday}' and '${sunday}'`;
+                }
+            }
         } else {
+            // they want a specific date
             slotValues['Date'].resolved = moment(slotValues['Date'].synonym).format('YYYY-MM-DD');
         }
 
-        const params = buildParams(slotValues);
+        const params = buildParams(slotValues, SoQL);
         const options = httpsHelper.buildOptions(params, api, process.env.PARKS_APP_TOKEN);
 
         let speechOutput = '';

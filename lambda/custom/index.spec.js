@@ -103,5 +103,18 @@ describe('Chicago Parks Skill tests', function() {
             // console.log(reply.response);
             assert.include(reply.response.outputSpeech.ssml, 'There are no movies showing');
         });
+
+        it('Finds movies for a weekend', async function() {
+            const va = require('virtual-alexa');
+            const alexa = va.VirtualAlexa.Builder()
+                .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
+                .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
+                .create();
+
+            let reply = await alexa.launch();
+            reply = await alexa.utter(`What movies are playing 2018-W22-WE`); // Alexa will turn "this weekend" to something like this
+            // console.log(reply.response);
+            assert.include(reply.response.outputSpeech.ssml, 'showing');
+        });
     });
 });
