@@ -75,8 +75,8 @@ const incompleteRequest = {
     }
 };
 
-describe('Get slot values from a complete request without synonyms', function() {
-    it('Should get the slot values', function() {
+describe('ssmlHelper tests', function() {
+    it('Should get the slot values from a complete request without synonyms', function() {
         var slots = ssmlHelper.getSlotValues(completedRequestWithoutSynonym.request.intent.slots);
 
         expect(slots).to.have.property('StartDate');
@@ -84,10 +84,8 @@ describe('Get slot values from a complete request without synonyms', function() 
         expect(slots.StartDate.resolved).to.be.equal('2018-05-25');
         expect(slots.StartDate.isValidated).to.be.equal(false); // true when validating custom slot types
     });
-});
 
-describe('Get slot values from a complete request with synonyms', function() {
-    it('Should get the slot values', function() {
+    it('Should get the slot values from a complete request with synonyms', function() {
         let slots = ssmlHelper.getSlotValues(completedRequestWithSynonym.request.intent.slots);
 
         expect(slots).to.have.property('station');
@@ -95,10 +93,8 @@ describe('Get slot values from a complete request with synonyms', function() {
         expect(slots.station.resolved).to.be.equal('Foster');
         expect(slots.station.isValidated).to.be.equal(true);
     });
-});
 
-describe('Get slot values from incomplete requests', function() {
-    it('Should not get the events slot values', function() {
+    it('Should not get the events slot values from incomplete requests', function() {
         var slots = ssmlHelper.getSlotValues(incompleteRequest.request.intent.slots);
 
         expect(slots).to.have.property('StartDate');

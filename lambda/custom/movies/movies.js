@@ -49,19 +49,19 @@ const FindMoviesIntentHandler = {
         } else if (slotValues['Date'].resolved.includes('W')) {
             // they want a weekend or week
             let parts = slotValues['Date'].resolved.split('W'); // e.g. "2018W22WE", "2018W4WE", or "2018W22"
-            delete slotValues['Date']; // eliminate from query string params, we'll use it in our SoQL query
+            delete slotValues['Date']; // remove date from the regular query string params, we'll use it in our SoQL query
 
             let weekNumber = parseInt(parts[1]);
             let monday = moment().tz('America/Chicago').week(weekNumber).day('Monday').format('YYYY-MM-DD');
             let friday = moment().tz('America/Chicago').week(weekNumber).day('Friday').format('YYYY-MM-DD');
             let sunday = moment().tz('America/Chicago').week(weekNumber + 1).day('Sunday').format('YYYY-MM-DD');
 
-            if (parts.length > 2 && parts[2] === 'WE') {
+            if (parts.length > 2 && parts[2] === 'E') { // e.g. "2018W14WE" split by 'W' characters
                 // they want the weekend
                 SoQL = `date between '${friday}' and '${sunday}'`;
             } else {
                 // they want the entire week
-                if (monday < today) {
+                if (monday <= today) {
                     // this week
                     SoQL = `date between '${today}' and '${sunday}'`;
                 } else {
@@ -84,23 +84,23 @@ const FindMoviesIntentHandler = {
             const movies = await httpsHelper.httpGet(options);
 
             if (movies.length === 1) {
-                speechOutput = `${movies[0].title}, rated ${movies[0].rating}, is showing on ${moment(movies[0].date).format('dddd MMM Do')} at ${movies[0].park}, located at ${movies[0].park_address}. It begins at dusk.`;
+                speechOutput = `${movies[0].title}, rated ${movies[0].rating}, is playing on ${moment(movies[0].date).format('dddd MMM Do')} at ${movies[0].park}, located at ${movies[0].park_address}. It begins at dusk.`;
                 displayOutput = `${moment(movies[0].date).format('dddd MMM Do')}\n${movies[0].title} - ${movies[0].rating}\n${movies[0].park}\n${movies[0].park_address}`;
             } else {
                 if (movies.length > 0) {
                     let speechSummary = [];
                     let displaySummary = [];
 
-                    speechSummary.push(`There are ${movies.length} movies showing on ${moment(slotValues.Date.resolved).format('dddd MMM Do')}. They are:`);
-                    displaySummary.push(`${moment(slotValues.Date.resolved).format('dddd MMM Do')}`);
+                    speechSummary.push(`There are ${movies.length} movies playing. They are:`);
+
                     for (var i = 0; i < movies.length; i++) {
-                        speechSummary.push(ssmlHelper.cleanUpSSML(`${movies[i].title}, rated ${movies[i].rating}, at ${movies[i].park}, located at ${movies[i].park_address}`));
-                        displaySummary.push(ssmlHelper.cleanUpSSML(`\n${movies[i].title} - ${movies[i].rating}\n${movies[i].park}\n${movies[i].park_address}`));
+                        speechSummary.push(ssmlHelper.cleanUpSSML(`On ${moment(movies[i].date).format('dddd MMM Do')}: ${movies[i].title}, rated ${movies[i].rating}, at ${movies[i].park}, located at ${movies[i].park_address}`));
+                        displaySummary.push(ssmlHelper.cleanUpSSML(`\n\n${moment(movies[i].date).format('dddd MMM DD')} - ${movies[i].title} - ${movies[i].rating}\n${movies[i].park}\n${movies[i].park_address}`));
                     }
                     speechOutput = `${ssmlHelper.convertArrayToReadableString(speechSummary, '.')}. All movies begin at dusk.`;
                     displayOutput = `${ssmlHelper.convertArrayToDisplayableString(displaySummary, '.')}`;
                 } else {
-                    speechOutput = displayOutput = `There are no movies showing for ${moment(slotValues.Date.resolved).format('dddd MMM Do')}`;
+                    speechOutput = displayOutput = `There are no movies playing on that date.`;
                 }
             }
         } catch (error) {

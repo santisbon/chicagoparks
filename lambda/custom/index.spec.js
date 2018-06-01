@@ -2,11 +2,12 @@
 
 const chai = require('chai');
 const assert = chai.assert;
+const moment = require('moment-timezone');
 
 describe('Chicago Parks Skill tests', function() {
     this.timeout(10000); // To disable timeout: this.timeout(0);
 
-    describe('Interaction tests', function() {
+    describe('Built-in intent tests', function() {
         it('Launches successfully', async function() {
             const va = require('virtual-alexa');
             const alexa = va.VirtualAlexa.Builder()
@@ -29,7 +30,9 @@ describe('Chicago Parks Skill tests', function() {
             reply = await alexa.utter('help');
             assert.include(reply.response.outputSpeech.ssml, 'You can tell me');
         });
+    });
 
+    describe('Custom intents tests', function() {
         it('Finds events', async function() {
             const va = require('virtual-alexa');
             const alexa = va.VirtualAlexa.Builder()
@@ -56,7 +59,7 @@ describe('Chicago Parks Skill tests', function() {
             let reply = await alexa.launch();
             reply = await alexa.utter('for movies');
 
-            assert.include(reply.response.outputSpeech.ssml, 'showing');
+            assert.include(reply.response.outputSpeech.ssml, 'playing');
         });
 
         it('Finds movies for a date with 1 movie', async function() {
@@ -65,13 +68,13 @@ describe('Chicago Parks Skill tests', function() {
                 .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
                 .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
                 .create();
-            const moment = require('moment-timezone');
+
             const date = moment('2018-06-01').tz('America/Chicago').format('YYYY-MM-DD');
 
             let reply = await alexa.launch();
             reply = await alexa.utter(`I want to see a movie on ${date}`);
             // console.log(reply.response);
-            assert.include(reply.response.outputSpeech.ssml, 'is showing');
+            assert.include(reply.response.outputSpeech.ssml, 'is playing');
         });
 
         it('Finds movies for a date with many movies', async function() {
@@ -80,7 +83,7 @@ describe('Chicago Parks Skill tests', function() {
                 .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
                 .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
                 .create();
-            const moment = require('moment-timezone');
+
             const date = moment('2018-06-15').tz('America/Chicago').format('YYYY-MM-DD');
 
             let reply = await alexa.launch();
@@ -95,26 +98,73 @@ describe('Chicago Parks Skill tests', function() {
                 .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
                 .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
                 .create();
-            const moment = require('moment-timezone');
+
             const date = moment('2018-06-02').tz('America/Chicago').format('YYYY-MM-DD');
 
             let reply = await alexa.launch();
             reply = await alexa.utter(`I want to see a movie on ${date}`);
             // console.log(reply.response);
-            assert.include(reply.response.outputSpeech.ssml, 'There are no movies showing');
+            assert.include(reply.response.outputSpeech.ssml, 'There are no movies playing');
         });
 
-        it('Finds movies for a weekend', async function() {
+        it('Finds movies for this week', async function() {
             const va = require('virtual-alexa');
             const alexa = va.VirtualAlexa.Builder()
                 .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
                 .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
                 .create();
 
+            const week = moment().tz('America/Chicago').week();
+
             let reply = await alexa.launch();
-            reply = await alexa.utter(`What movies are playing 2018-W22-WE`); // Alexa will turn "this weekend" to something like this
+            reply = await alexa.utter(`What movies are playing 2018-W${week}`); // Alexa will turn "this weekend" to something like this
             // console.log(reply.response);
-            assert.include(reply.response.outputSpeech.ssml, 'showing');
+            assert.include(reply.response.outputSpeech.ssml, 'playing');
+        });
+
+        it('Finds movies for this weekend', async function() {
+            const va = require('virtual-alexa');
+            const alexa = va.VirtualAlexa.Builder()
+                .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
+                .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
+                .create();
+
+            const week = moment().tz('America/Chicago').week();
+
+            let reply = await alexa.launch();
+            reply = await alexa.utter(`What movies are playing 2018-W${week}-WE`); // Alexa will turn "this weekend" to something like this
+            // console.log(reply.response);
+            assert.include(reply.response.outputSpeech.ssml, 'playing');
+        });
+
+        it('Finds movies for next week', async function() {
+            const va = require('virtual-alexa');
+            const alexa = va.VirtualAlexa.Builder()
+                .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
+                .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
+                .create();
+
+            const week = moment().tz('America/Chicago').week() + 1;
+
+            let reply = await alexa.launch();
+            reply = await alexa.utter(`What movies are playing 2018-W${week}`); // Alexa will turn "this weekend" to something like this
+            // console.log(reply.response);
+            assert.include(reply.response.outputSpeech.ssml, 'playing');
+        });
+
+        it('Finds movies for next weekend', async function() {
+            const va = require('virtual-alexa');
+            const alexa = va.VirtualAlexa.Builder()
+                .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
+                .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
+                .create();
+
+            const week = moment().tz('America/Chicago').week() + 1;
+
+            let reply = await alexa.launch();
+            reply = await alexa.utter(`What movies are playing 2018-W${week}-WE`); // Alexa will turn "this weekend" to something like this
+            // console.log(reply.response);
+            assert.include(reply.response.outputSpeech.ssml, 'playing');
         });
     });
 });
