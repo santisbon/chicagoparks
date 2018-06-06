@@ -166,5 +166,35 @@ describe('Chicago Parks Skill tests', function() {
             // console.log(reply.response);
             assert.include(reply.response.outputSpeech.ssml, 'playing');
         });
+
+        it('Finds movies for this month', async function() {
+            const va = require('virtual-alexa');
+            const alexa = va.VirtualAlexa.Builder()
+                .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
+                .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
+                .create();
+
+            const month = moment().tz('America/Chicago').format('YYYY-MM');
+
+            let reply = await alexa.launch();
+            reply = await alexa.utter(`What movies are playing ${month}`);
+            // console.log(reply.response);
+            assert.include(reply.response.outputSpeech.ssml, 'playing');
+        });
+
+        it('Finds movies for next month', async function() {
+            const va = require('virtual-alexa');
+            const alexa = va.VirtualAlexa.Builder()
+                .handler('index.handler') // Lambda function file and name e.g. 'index.handler'
+                .interactionModelFile('../../models/en-US.json') // intent schema and sample utterances
+                .create();
+
+            const month = moment().add(1, 'month').tz('America/Chicago').format('YYYY-MM');
+
+            let reply = await alexa.launch();
+            reply = await alexa.utter(`What movies are playing ${month}`);
+            // console.log(reply.response);
+            assert.include(reply.response.outputSpeech.ssml, 'playing');
+        });
     });
 });

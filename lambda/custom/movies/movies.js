@@ -58,7 +58,13 @@ const FindMoviesIntentHandler = {
 
             if (parts.length > 2 && parts[2] === 'E') { // e.g. "2018W14WE" split by 'W' characters
                 // they want the weekend
-                SoQL = `date between '${friday}' and '${sunday}'`;
+                if (today > friday) {
+                    // they want this weekend and the weekend already started
+                    SoQL = `date between '${today}' and '${sunday}'`;
+                } else {
+                    // they want this weekend and the weekend has not started yet
+                    SoQL = `date between '${friday}' and '${sunday}'`;
+                }
             } else {
                 // they want the entire week
                 if (monday <= today) {
@@ -68,6 +74,19 @@ const FindMoviesIntentHandler = {
                     // some other week
                     SoQL = `date between '${monday}' and '${sunday}'`;
                 }
+            }
+        } else if (slotValues['Date'].resolved.length === 6) {
+            // they want a month e.g. 201806
+            let startDate = moment(slotValues['Date'].synonym + '01').format('YYYY-MM-DD');
+            let endOfMonth = moment(slotValues['Date'].synonym + '01').endOf('month').format('YYYY-MM-DD');
+            delete slotValues['Date']; // remove date from the regular query string params, we'll use it in our SoQL query
+
+            if (startDate <= today) {
+                // this month, start from today instead of the whole month
+                SoQL = `date between '${today}' and '${endOfMonth}'`;
+            } else {
+                // some other month
+                SoQL = `date between '${startDate}' and '${endOfMonth}'`;
             }
         } else {
             // they want a specific date
