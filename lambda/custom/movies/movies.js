@@ -1,6 +1,5 @@
 'use strict';
-const ssmlHelper = require('../helpers/ssmlHelper');
-const httpsHelper = require('../helpers/httpsHelper');
+const helper = require('alexa-helper');
 const moment = require('moment-timezone');
 
 const title = 'Chicago Parks';
@@ -38,7 +37,7 @@ const FindMoviesIntentHandler = {
     },
     async handle(handlerInput) {
         const filledSlots = handlerInput.requestEnvelope.request.intent.slots;
-        const slotValues = ssmlHelper.getSlotValues(filledSlots);
+        const slotValues = helper.ssmlHelper.getSlotValues(filledSlots);
 
         const today = moment().tz('America/Chicago').format('YYYY-MM-DD');
         let SoQL;
@@ -94,13 +93,13 @@ const FindMoviesIntentHandler = {
         }
 
         const params = buildParams(slotValues, SoQL);
-        const options = httpsHelper.buildOptions(params, api, process.env.PARKS_APP_TOKEN);
+        const options = helper.httpsHelper.buildOptions(params, api, process.env.PARKS_APP_TOKEN);
 
         let speechOutput = '';
         let displayOutput = '';
 
         try {
-            const movies = await httpsHelper.httpGet(options);
+            const movies = await helper.httpsHelper.httpGet(options);
 
             if (movies.length === 1) {
                 speechOutput = `${movies[0].title}, rated ${movies[0].rating}, is playing on ${moment(movies[0].date).format('dddd MMM Do')} at ${movies[0].park}, located at ${movies[0].park_address}. It begins at dusk.`;
@@ -113,11 +112,11 @@ const FindMoviesIntentHandler = {
                     speechSummary.push(`There are ${movies.length} movies playing. They are:`);
 
                     for (var i = 0; i < movies.length; i++) {
-                        speechSummary.push(ssmlHelper.cleanUpSSML(`On ${moment(movies[i].date).format('dddd MMM Do')}: ${movies[i].title}, rated ${movies[i].rating}, at ${movies[i].park}, located at ${movies[i].park_address}`));
-                        displaySummary.push(ssmlHelper.cleanUpSSML(`\n\n${moment(movies[i].date).format('dddd MMM DD')} - ${movies[i].title} - ${movies[i].rating}\n${movies[i].park}\n${movies[i].park_address}`));
+                        speechSummary.push(helper.ssmlHelper.cleanUpSSML(`On ${moment(movies[i].date).format('dddd MMM Do')}: ${movies[i].title}, rated ${movies[i].rating}, at ${movies[i].park}, located at ${movies[i].park_address}`));
+                        displaySummary.push(helper.ssmlHelper.cleanUpSSML(`\n\n${moment(movies[i].date).format('dddd MMM DD')} - ${movies[i].title} - ${movies[i].rating}\n${movies[i].park}\n${movies[i].park_address}`));
                     }
-                    speechOutput = `${ssmlHelper.convertArrayToReadableString(speechSummary, '.')}. All movies begin at dusk.`;
-                    displayOutput = `${ssmlHelper.convertArrayToDisplayableString(displaySummary, '.')}`;
+                    speechOutput = `${helper.ssmlHelper.convertArrayToReadableString(speechSummary, '.')}. All movies begin at dusk.`;
+                    displayOutput = `${helper.ssmlHelper.convertArrayToDisplayableString(displaySummary, '.')}`;
                 } else {
                     speechOutput = displayOutput = `There are no movies playing on that date.`;
                 }
