@@ -1,7 +1,6 @@
 'use strict';
 
-const ssmlHelper = require('../helpers/ssmlHelper');
-const httpsHelper = require('../helpers/httpsHelper');
+const helper = require('alexa-helper');
 
 /**
  * The Socrata APIs provide rich query functionality through a query language called
@@ -118,24 +117,24 @@ const CompletedEventsIntentHandler = {
     },
     async handle(handlerInput) {
         const filledSlots = handlerInput.requestEnvelope.request.intent.slots;
-        const slotValues = ssmlHelper.getSlotValues(filledSlots);
+        const slotValues = helper.ssmlHelper.getSlotValues(filledSlots);
         const params = buildParams(slotValues);
-        const options = httpsHelper.buildOptions(params, api, process.env.PARKS_APP_TOKEN);
+        const options = helper.httpsHelper.buildOptions(params, api, process.env.PARKS_APP_TOKEN);
 
         let speechOutput = '';
         let displayOutput = '';
 
         try {
-            const parkEvents = await httpsHelper.httpGet(options);
+            const parkEvents = await helper.httpsHelper.httpGet(options);
 
             if (parkEvents.length > 0) {
                 let summary = [];
 
                 summary.push(`There are ${parkEvents.length} events on ${slotValues.StartDate.resolved}. They are:`);
                 for (var i = 0; i < parkEvents.length; i++) {
-                    summary.push(ssmlHelper.cleanUpSSML(parkEvents[i].event_description) + ' at ' + ssmlHelper.cleanUpSSML(parkEvents[i].park_facility_name));
+                    summary.push(helper.ssmlHelper.cleanUpSSML(parkEvents[i].event_description) + ' at ' + helper.ssmlHelper.cleanUpSSML(parkEvents[i].park_facility_name));
                 }
-                speechOutput = displayOutput = `${ssmlHelper.convertArrayToReadableString(summary, '.')}`;
+                speechOutput = displayOutput = `${helper.ssmlHelper.convertArrayToReadableString(summary, '.')}`;
             } else {
                 speechOutput = displayOutput = `There are no events for ${slotValues.StartDate.synonym}`;
             }
