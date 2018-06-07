@@ -45,7 +45,7 @@ function buildParams(slotValues) {
 }
 
 /**
- * Handles a WeatherIntent when a required slot is missing.
+ * Handles an intent when a required slot is missing.
  * It delegates slot elicitation to Alexa.
  * It also uses entity resolution to ask the user for clarification if
  * a synonym is mapped to two slot values.
